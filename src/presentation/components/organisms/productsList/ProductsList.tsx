@@ -14,14 +14,17 @@ export const ProductsList = () => {
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const term = useProduct(state => state.term);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (term.length === 0) {
       setProductsListData(productsFind);
-    } else {
-      setProductsListData(
-        productsFind?.filter(productFind => productFind.name.includes(term)),
-      );
     }
+  });
+
+  useEffect(() => {
+    setProductsListData(
+      productsFind?.filter(productFind => productFind.name.includes(term)),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [term]);
 
@@ -56,6 +59,7 @@ const style = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 20,
     padding: 10,
+    paddingBottom: 5,
     borderColor: 'black',
     borderRadius: 15,
     borderWidth: 1,

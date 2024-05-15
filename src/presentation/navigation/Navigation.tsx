@@ -9,7 +9,7 @@ import {Product} from '../../core/entities/product.entity';
 export type RootStackParams = {
   Home: undefined;
   Details: {product: Product};
-  ProductDataCreateOrModify: undefined;
+  ProductDataCreateOrModify?: {product?: Product};
 };
 
 const Stack = createStackNavigator<RootStackParams>();
