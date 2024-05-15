@@ -31,5 +31,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderWidth: 1,
     padding: 10,
+    fontSize: 20,
   },
 });
