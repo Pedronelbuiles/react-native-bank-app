@@ -3,7 +3,7 @@ import {HttpAdapter} from './http.adapter';
 
 interface Options {
   baseUrl: string;
-  params: Record<string, string>;
+  params?: Record<string, string>;
 }
 
 export class AxiosAdapter implements HttpAdapter {
@@ -12,6 +12,9 @@ export class AxiosAdapter implements HttpAdapter {
     this.axiosInstance = axios.create({
       baseURL: options.baseUrl,
       params: options.params,
+      headers: {
+        authorId: '444',
+      },
     });
   }
 

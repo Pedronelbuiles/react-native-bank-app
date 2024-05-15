@@ -1,10 +1,26 @@
+import {StackScreenProps} from '@react-navigation/stack';
 import React from 'react';
-import {Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import {RootStackParams} from '../../navigation/Navigation';
+import {ProductDetailsComponents} from '../../components/organisms/productDetailsComponents/ProductDetailsComponents';
 
-export const DetailsScreen = () => {
+interface Props extends StackScreenProps<RootStackParams, 'Details'> {}
+
+export const DetailsScreen = ({route}: Props) => {
+  const {product} = route.params;
+
   return (
-    <View>
-      <Text>DetailsScreen</Text>
+    <View style={style.container}>
+      <ProductDetailsComponents product={product} />
     </View>
   );
 };
+
+const style = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    paddingTop: 40,
+    paddingHorizontal: 30,
+  },
+});

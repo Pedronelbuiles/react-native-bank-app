@@ -20,6 +20,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: 'gray',
+    backgroundColor: 'white',
   },
   headerText: {
     fontSize: 20,
