@@ -2,22 +2,23 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {InputText} from '../../atoms/textInput/TextInput';
 import {useProductCreateStore} from '../../../store/product-create-store';
+import {RouteProp, useRoute} from '@react-navigation/native';
+import {RootStackParams} from '../../../navigation/Navigation';
 
 export const FormCreateOrModify = () => {
+  const {createOrModify, product} =
+    useRoute<RouteProp<RootStackParams, 'ProductDataCreateOrModify'>>().params;
   const changeProductCreate = useProductCreateStore(
     state => state.changeProductCreate,
   );
 
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [logo, setLogo] = useState('');
-  const [liveration, setLiveration] = useState('');
+  const [flagExternalObject, setflagExternalObject] = useState(false);
+  const [idLocal, setIdLocal] = useState('');
+  const [nameLocal, setNameLocal] = useState('');
+  const [descriptionLocal, setDescriptionLocal] = useState('');
+  const [logoLocal, setLogoLocal] = useState('');
+  const [liverationLocal, setLiverationLocal] = useState('');
 
-  const idGlobal = useProductCreateStore(state => state.id);
-  const nameGlobal = useProductCreateStore(state => state.name);
-  const descriptionGlobal = useProductCreateStore(state => state.description);
-  const logoGlobal = useProductCreateStore(state => state.logo);
   const liverationGlobal = useProductCreateStore(state => state.release);
 
   const idError = useProductCreateStore(state => state.idError);
@@ -42,26 +43,42 @@ export const FormCreateOrModify = () => {
     state => state.liverationErrorMessage,
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    changeProductCreate(id, name, description, logo, liveration);
-  }, [id, name, description, logo, liveration, changeProductCreate]);
+    if (createOrModify === 'modify' && !flagExternalObject) {
+      const liveration = product?.release.split('T')[0].replaceAll('-', '/')!;
+      setIdLocal(product?.id!);
+      setNameLocal(product?.name!);
+      setDescriptionLocal(product?.description!);
+      setLogoLocal(product?.logo!);
+      setLiverationLocal(
+        `${liveration.split('/')[2]}/${liveration.split('/')[1]}/${
+          liveration.split('/')[0]
+        }`,
+      );
+      setflagExternalObject(true);
+    }
+  });
 
   useEffect(() => {
-    setId(idGlobal!);
-    setName(nameGlobal!);
-    setDescription(descriptionGlobal!);
-    setLogo(logoGlobal!);
-    setLiveration(liverationGlobal!);
-  }, [idGlobal, nameGlobal, descriptionGlobal, logoGlobal, liverationGlobal]);
+    let id = idLocal,
+      name = nameLocal,
+      description = descriptionLocal,
+      logo = logoLocal,
+      release = liverationLocal;
+    changeProductCreate(id, name, description, logo, release);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idLocal, nameLocal, descriptionLocal, logoLocal, liverationLocal]);
 
   return (
     <View style={styles.container}>
       <View style={styles.containerInput}>
         <Text style={styles.inputText}>ID</Text>
         <InputText
-          onChangeInput={setId}
-          value={id}
+          onChangeInput={setIdLocal}
+          value={idLocal}
           placeHolder=""
+          editable={createOrModify === 'modify' ? false : true}
           error={idError}
         />
         {idError && <Text style={styles.errorText}>{idErrorMessage}</Text>}
@@ -69,8 +86,8 @@ export const FormCreateOrModify = () => {
       <View style={styles.containerInput}>
         <Text style={styles.inputText}>Nombre</Text>
         <InputText
-          onChangeInput={setName}
-          value={name}
+          onChangeInput={setNameLocal}
+          value={nameLocal}
           placeHolder=""
           error={nameError}
         />
@@ -79,8 +96,8 @@ export const FormCreateOrModify = () => {
       <View style={styles.containerInput}>
         <Text style={styles.inputText}>Descripción</Text>
         <InputText
-          onChangeInput={setDescription}
-          value={description}
+          onChangeInput={setDescriptionLocal}
+          value={descriptionLocal}
           placeHolder=""
           error={descriptionError}
         />
@@ -91,8 +108,8 @@ export const FormCreateOrModify = () => {
       <View style={styles.containerInput}>
         <Text style={styles.inputText}>Logo</Text>
         <InputText
-          onChangeInput={setLogo}
-          value={logo}
+          onChangeInput={setLogoLocal}
+          value={logoLocal}
           placeHolder=""
           error={logoError}
         />
@@ -101,8 +118,8 @@ export const FormCreateOrModify = () => {
       <View style={styles.containerInput}>
         <Text style={styles.inputText}>Fecha Liberación</Text>
         <InputText
-          onChangeInput={setLiveration}
-          value={liveration}
+          onChangeInput={setLiverationLocal}
+          value={liverationLocal}
           placeHolder=""
           error={liverationError}
         />
@@ -114,13 +131,9 @@ export const FormCreateOrModify = () => {
         <Text style={styles.inputText}>Fecha Revisión</Text>
         <InputText
           onChangeInput={() => {}}
-          value={
-            liveration?.length > 1
-              ? `${liveration?.split('/')[0]!}/${liveration?.split('/')[1]!}/${
-                  Number(liveration?.split('/')[2]!) + 1
-                }`
-              : ''
-          }
+          value={`${liverationGlobal?.split('/')[0]!}/${liverationGlobal?.split(
+            '/',
+          )[1]!}/${Number(liverationGlobal?.split('/')[2]!) + 1}`}
           editable={false}
           placeHolder=""
         />

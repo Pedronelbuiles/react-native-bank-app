@@ -42,7 +42,7 @@ export const ProductsList = () => {
       reloadProducts();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reload, callFetch]);
+  }, [reload]);
 
   if (isLoading) {
     return <Text>Cargando...</Text>;

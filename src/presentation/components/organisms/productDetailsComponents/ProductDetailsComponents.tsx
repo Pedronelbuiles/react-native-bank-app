@@ -4,12 +4,34 @@ import {ProductInfoTitle} from '../../atoms/productInfoTitle/ProductInfoTitle';
 import {ProductData} from '../../molecules/productdata/ProductData';
 import {Button} from '../../atoms/button/Button';
 import {Product} from '../../../../core/entities/product.entity';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParams} from '../../../navigation/Navigation';
+import {useProductCreateStore} from '../../../store/product-create-store';
 
 interface Props {
   product: Product;
 }
 
 export const ProductDetailsComponents = ({product}: Props) => {
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const changeProductCreate = useProductCreateStore(
+    state => state.changeProductCreate,
+  );
+
+  const editProduct = () => {
+    changeProductCreate(
+      product.id,
+      product.name,
+      product.description,
+      product.logo,
+      product.release,
+    );
+    navigation.navigate('ProductDataCreateOrModify', {
+      createOrModify: 'modify',
+      product,
+    });
+  };
+
   return (
     <View style={style.container}>
       <View style={style.containerInfo}>
@@ -23,7 +45,7 @@ export const ProductDetailsComponents = ({product}: Props) => {
         />
       </View>
       <View style={style.containerButtons}>
-        <Button title="Editar" onPress={() => {}} />
+        <Button title="Editar" onPress={editProduct} />
         <Button title="Eliminar" onPress={() => {}} type="danger" />
       </View>
     </View>
