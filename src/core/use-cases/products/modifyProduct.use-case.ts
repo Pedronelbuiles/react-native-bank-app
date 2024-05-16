@@ -3,12 +3,12 @@ import {ProductsBackend} from '../../../infrastructure/interfaces/productBackend
 import {ProductsMapper} from '../../../infrastructure/mappers/products.mapper';
 import {Product} from '../../entities/product.entity';
 
-export const createProductUseCase = async (
+export const modifyProductUseCase = async (
   fetcher: HttpAdapter,
   data: Product,
 ): Promise<Product> => {
   try {
-    const newProduct = await fetcher.post<ProductsBackend>('/bp/products', {
+    const productModified = await fetcher.put<ProductsBackend>('/bp/products', {
       id: data.id,
       name: data.name,
       description: data.description,
@@ -16,9 +16,9 @@ export const createProductUseCase = async (
       date_release: data.release.replaceAll('/', '-'),
       date_revision: data.revision.replaceAll('/', '-'),
     });
-    return ProductsMapper.fromProductBackendToEntity(newProduct);
+    return ProductsMapper.fromProductBackendToEntity(productModified);
   } catch (error) {
     console.log(error);
-    throw new Error('Error creating product');
+    throw new Error('Error modify product');
   }
 };

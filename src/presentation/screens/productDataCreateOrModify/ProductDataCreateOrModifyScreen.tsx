@@ -9,6 +9,8 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParams} from '../../navigation/Navigation';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {useProduct} from '../../store/product-store';
+import {useProducts} from '../../hooks/useProducts';
+import {useModifyProduct} from '../../hooks/useModifyProduct';
 
 interface Props
   extends StackScreenProps<RootStackParams, 'ProductDataCreateOrModify'> {}
@@ -17,9 +19,11 @@ export const ProductDataCreateOrModify = ({route}: Props) => {
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const {createOrModify} = route.params;
   const id = useProductCreateStore(state => state.id);
+  const {callFetch} = useProducts();
 
   const {validateFetch} = useValidateProducts();
   const {createProduct} = useCreateProduct();
+  const {modifyProduct} = useModifyProduct();
   const changeReload = useProduct(state => state.changeReload);
 
   const name = useProductCreateStore(state => state.name);
@@ -35,10 +39,67 @@ export const ProductDataCreateOrModify = ({route}: Props) => {
 
   useEffect(() => {
     changeProductCreate(revision);
-  }, [revision, changeProductCreate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revision]);
 
   const cleanfields = () => {
     changeProductCreate('', '', '', '', '', '');
+  };
+
+  const createProductAction = async () => {
+    const resultFields = await validateFields();
+    if (resultFields) {
+      if (createOrModify === 'create') {
+        const createProductResponse = await createProduct(
+          id!,
+          name!,
+          description!,
+          logo!,
+          `${release?.split('/')[2]}/${release?.split('/')[1]}/${
+            release?.split('/')[0]
+          }`,
+          `${Number(release?.split('/')[2]!) + 1}/${release?.split(
+            '/',
+          )[1]!}/${release?.split('/')[0]!}`,
+        );
+        if (createProductResponse.id) {
+          const callResult = await callFetch();
+          if (callResult.length > 0) {
+            cleanfields();
+            changeReload(true);
+            navigation.navigate('Home', {reload: true});
+          }
+        }
+      }
+    }
+  };
+
+  const modifyProductAction = async () => {
+    const resultFields = await validateFields();
+    if (resultFields) {
+      if (createOrModify === 'modify') {
+        const createProductResponse = await modifyProduct(
+          id!,
+          name!,
+          description!,
+          logo!,
+          `${release?.split('/')[2]}/${release?.split('/')[1]}/${
+            release?.split('/')[0]
+          }`,
+          `${Number(release?.split('/')[2]!) + 1}/${release?.split(
+            '/',
+          )[1]!}/${release?.split('/')[0]!}`,
+        );
+        if (createProductResponse.id) {
+          const callResult = await callFetch();
+          if (callResult.length > 0) {
+            cleanfields();
+            changeReload(true);
+            navigation.navigate('Home', {reload: true});
+          }
+        }
+      }
+    }
   };
 
   const validateDate = (date: string) => {
@@ -70,30 +131,31 @@ export const ProductDataCreateOrModify = ({route}: Props) => {
   };
 
   const validateFields = async (): Promise<boolean> => {
-    if (id?.length === 0) {
-      useProductCreateStore.setState({
-        idError: true,
-        idErrorMessage: 'Este campo es requerido',
-      });
-      return false;
-    }
+    if (createOrModify !== 'modify') {
+      if (id?.length === 0) {
+        useProductCreateStore.setState({
+          idError: true,
+          idErrorMessage: 'Este campo es requerido',
+        });
+        return false;
+      }
 
-    if (id?.length! < 3 || id?.length! > 10) {
-      useProductCreateStore.setState({
-        idError: true,
-        idErrorMessage: 'El ID debe tener mínimo 3 caracteresy máximo 10',
-      });
-      return false;
-    }
+      if (id?.length! < 3 || id?.length! > 10) {
+        useProductCreateStore.setState({
+          idError: true,
+          idErrorMessage: 'El ID debe tener mínimo 3 caracteresy máximo 10',
+        });
+        return false;
+      }
+      const isValidate = await validateFetch(id!);
 
-    const isValidate = await validateFetch(id!);
-
-    if (isValidate) {
-      useProductCreateStore.setState({
-        idError: true,
-        idErrorMessage: 'ID no válido',
-      });
-      return false;
+      if (isValidate) {
+        useProductCreateStore.setState({
+          idError: true,
+          idErrorMessage: 'ID no válido',
+        });
+        return false;
+      }
     }
 
     if (name?.length === 0) {
@@ -154,19 +216,21 @@ export const ProductDataCreateOrModify = ({route}: Props) => {
       return false;
     }
 
-    const actualDate = new Date().toLocaleDateString();
+    if (createOrModify !== 'modify') {
+      const actualDate = new Date().toLocaleDateString();
 
-    if (
-      release?.split('/')[0]! < actualDate?.split('/')[1] ||
-      release?.split('/')[1].replace('0', '')! < actualDate?.split('/')[0] ||
-      release?.split('/')[2]! < actualDate?.split('/')[2]
-    ) {
-      useProductCreateStore.setState({
-        liverationError: true,
-        liverationErrorMessage:
-          'La fecha debe ser mayor o igual a la fecha actual',
-      });
-      return false;
+      if (
+        release?.split('/')[0]! < actualDate?.split('/')[1] ||
+        release?.split('/')[1].replace('0', '')! < actualDate?.split('/')[0] ||
+        release?.split('/')[2]! < actualDate?.split('/')[2]
+      ) {
+        useProductCreateStore.setState({
+          liverationError: true,
+          liverationErrorMessage:
+            'La fecha debe ser mayor o igual a la fecha actual',
+        });
+        return false;
+      }
     }
 
     return true;
@@ -179,28 +243,10 @@ export const ProductDataCreateOrModify = ({route}: Props) => {
       <View style={styles.containerButtons}>
         <Button
           title="Enviar"
-          onPress={async () => {
-            const resultFields = await validateFields();
-            if (resultFields) {
-              if (createOrModify === 'create') {
-                const createProductResponse = await createProduct(
-                  id!,
-                  name!,
-                  description!,
-                  logo!,
-                  `${release?.split('/')[2]}/${release?.split('/')[1]}/${
-                    release?.split('/')[0]
-                  }`,
-                  `${Number(release?.split('/')[2]!) + 1}/${release?.split(
-                    '/',
-                  )[1]!}/${release?.split('/')[0]!}`,
-                );
-                if (createProductResponse.id) {
-                  changeReload(true);
-                  navigation.navigate('Home', {reload: true});
-                }
-              }
-            }
+          onPress={() => {
+            createOrModify === 'modify'
+              ? modifyProductAction()
+              : createProductAction();
           }}
           type="primary"
         />
