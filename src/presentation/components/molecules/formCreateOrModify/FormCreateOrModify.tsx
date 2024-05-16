@@ -13,7 +13,12 @@ export const FormCreateOrModify = () => {
   const [description, setDescription] = useState('');
   const [logo, setLogo] = useState('');
   const [liveration, setLiveration] = useState('');
-  const [revision, setRevision] = useState('');
+
+  const idGlobal = useProductCreateStore(state => state.id);
+  const nameGlobal = useProductCreateStore(state => state.name);
+  const descriptionGlobal = useProductCreateStore(state => state.description);
+  const logoGlobal = useProductCreateStore(state => state.logo);
+  const liverationGlobal = useProductCreateStore(state => state.release);
 
   const idError = useProductCreateStore(state => state.idError);
   const nameError = useProductCreateStore(state => state.nameError);
@@ -38,8 +43,16 @@ export const FormCreateOrModify = () => {
   );
 
   useEffect(() => {
-    changeProductCreate(id, name, description, logo, liveration, revision);
-  }, [id, name, description, logo, liveration, revision, changeProductCreate]);
+    changeProductCreate(id, name, description, logo, liveration);
+  }, [id, name, description, logo, liveration, changeProductCreate]);
+
+  useEffect(() => {
+    setId(idGlobal!);
+    setName(nameGlobal!);
+    setDescription(descriptionGlobal!);
+    setLogo(logoGlobal!);
+    setLiveration(liverationGlobal!);
+  }, [idGlobal, nameGlobal, descriptionGlobal, logoGlobal, liverationGlobal]);
 
   return (
     <View style={styles.container}>
@@ -100,8 +113,14 @@ export const FormCreateOrModify = () => {
       <View style={styles.containerInput}>
         <Text style={styles.inputText}>Fecha Revisión</Text>
         <InputText
-          onChangeInput={setRevision}
-          value={revision}
+          onChangeInput={() => {}}
+          value={
+            liveration?.length > 1
+              ? `${liveration?.split('/')[0]!}/${liveration?.split('/')[1]!}/${
+                  Number(liveration?.split('/')[2]!) + 1
+                }`
+              : ''
+          }
           editable={false}
           placeHolder=""
         />

@@ -17,8 +17,17 @@ export const useProducts = () => {
     setIsLoading(false);
   };
 
+  const callFetch = async () => {
+    setIsLoading(true);
+    const products = await UseCases.getProductsUseCase(productBackendFetcher);
+    setProductsFind(products);
+    setIsLoading(false);
+    return products;
+  };
+
   return {
     isLoading,
     productsFind,
+    callFetch,
   };
 };
