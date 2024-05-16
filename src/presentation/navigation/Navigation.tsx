@@ -7,9 +7,9 @@ import {HeaderApp} from '../components/molecules/headerApp/HeaderApp';
 import {Product} from '../../core/entities/product.entity';
 
 export type RootStackParams = {
-  Home: undefined;
+  Home?: {reload?: boolean};
   Details: {product: Product};
-  ProductDataCreateOrModify: undefined;
+  ProductDataCreateOrModify: {createOrModify: string; product?: Product};
 };
 
 const Stack = createStackNavigator<RootStackParams>();

@@ -7,8 +7,8 @@ interface Props {
   name: string;
   description: string;
   url: string;
-  liberation: Date;
-  revision: Date;
+  liberation: string;
+  revision: string;
 }
 
 export const ProductData = ({
