@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 
 export const ArrowIcon = () => {
-  return <View style={style.arrow} />;
+  return <View style={style.arrow} testID="arrowIcon" />;
 };
 
 const style = StyleSheet.create({
