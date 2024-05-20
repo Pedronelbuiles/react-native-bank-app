@@ -7,6 +7,7 @@ interface Props {
   placeHolder?: string;
   editable?: boolean;
   error?: boolean;
+  testId?: string;
 }
 
 export const InputText = ({
@@ -15,9 +16,11 @@ export const InputText = ({
   placeHolder = 'example...',
   editable = true,
   error,
+  testId = 'input text',
 }: Props) => {
   return (
     <TextInput
+      testID={testId}
       style={[styles.input, error && styles.inputError]}
       onChangeText={onChangeInput}
       value={value}
