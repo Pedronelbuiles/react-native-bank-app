@@ -10,7 +10,7 @@ export const HomeComponents = () => {
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
 
   return (
-    <View style={style.container}>
+    <View style={style.container} testID="HomeComponentsTestId">
       <View style={style.searchContainer}>
         <SearchInput />
       </View>

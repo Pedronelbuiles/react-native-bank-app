@@ -14,7 +14,7 @@ export const SearchInput = () => {
   }, [term]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="SearchInputTestId">
       <InputText onChangeInput={setTerm} value={term} placeHolder="Buscar..." />
     </View>
   );

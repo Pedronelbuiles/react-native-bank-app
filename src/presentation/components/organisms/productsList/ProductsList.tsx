@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {FlatList, StyleSheet, Text} from 'react-native';
 import {ProductButton} from '../../molecules/productButton/ProductButton';
 import {useProducts} from '../../../hooks/useProducts';
-import {FlatList} from 'react-native-gesture-handler';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParams} from '../../../navigation/Navigation';
 import {useProduct} from '../../../store/product-store';
